@@ -5,7 +5,6 @@ const format = require('pg-format');
 // additionalQuery: string
 // columnNames: Array<string>
 // batchValues: Array<Array<string>>
-// onComplete: () => void
 
 const batchInsert = ({ pool, tableName, columnNames, additionalQuery, batchValues }) => {
   const query = format(
