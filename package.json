@@ -6,7 +6,7 @@
   "author": "DireCorgi <s.frank.ye@gmail.com>",
   "license": "MIT",
   "private": false,
-  "engine": {
+  "engines": {
     "node": "8.10.0"
   },
   "scripts": {
