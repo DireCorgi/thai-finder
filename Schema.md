@@ -47,7 +47,7 @@ Restaurants will be where the meat of our data will be stored. To ensure fast da
 - id: primary_key
 - camis: integer, indexed
 - inspection_date: date
-- grade: string
+- grade: string, indexed
 - score: string
 - grade_date: date
 - record_date: date
@@ -55,4 +55,4 @@ Restaurants will be where the meat of our data will be stored. To ensure fast da
 - created_at: date
 - unique index on [inspection_type, inspection_date, camis]
 
-Inspections hold a history of all the grades that were assigned to the restaurant. This is useful data to have if we have any issues with the denormalization (we can always fall). On key thing is the unique index on inspection_type, inspection_date, and CAMIS. This is to ensure we don't have any duplicate inspections.
+Inspections hold a history of all the grades that were assigned to the restaurant. This is useful data to have if we have any issues with the denormalization (we can always fall). On key thing is the unique index on inspection_type, inspection_date, and CAMIS. This is to ensure we don't have any duplicate inspections. This table is also useful to have if we ever want to backfill the violations table (in case our friend really really wants to see what's wrong at the restaurants)
