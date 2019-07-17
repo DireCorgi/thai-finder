@@ -1,4 +1,4 @@
-const updateGrades = async (pool) => {
+const updateGrades = async pool => {
   // Get latest grades for restaurants
   const result = await pool.query(
     `
@@ -11,11 +11,14 @@ const updateGrades = async (pool) => {
     `
   );
   // Update denormalized data only if there is a diff
-  result.rows.forEach(async (row) => {
+  result.rows.forEach(async row => {
     if (row.current_grade !== row.grade) {
       console.info('Found restaurant id:', row.id, 'needs to be updated');
-      await pool.query('UPDATE restaurants SET current_grade = $1 WHERE id = $2', [row.grade, row.id])
-      console.info('finished updating id:', row.id)
+      await pool.query('UPDATE restaurants SET current_grade = $1 WHERE id = $2', [
+        row.grade,
+        row.id
+      ]);
+      console.info('finished updating id:', row.id);
     }
   });
 };

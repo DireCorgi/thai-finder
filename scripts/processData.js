@@ -1,3 +1,4 @@
+require('dotenv').config();
 const csv = require('csv-parser');
 const fs = require('fs');
 const pool = require('../db');
@@ -44,7 +45,15 @@ const _updateDatabase = async () => {
     restaurantResult = await batchInsert({
       pool,
       tableName: 'restaurants',
-      columnNames: ['camis', 'name', 'address', 'zipcode', 'phone', 'cuisine_type', 'current_grade'],
+      columnNames: [
+        'camis',
+        'name',
+        'address',
+        'zipcode',
+        'phone',
+        'cuisine_type',
+        'current_grade'
+      ],
       additionalQuery: `
         ON CONFLICT (camis)
         DO UPDATE
