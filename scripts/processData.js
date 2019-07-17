@@ -8,12 +8,13 @@ let batchInsertRestaurants = {};
 
 const processData = async () => {
   let file;
-  try {
-    file = await getData();
-  } catch (error) {
-    console.error('Error Downloading', error);
-    return;
-  }
+  // try {
+  //   file = await getData();
+  // } catch (error) {
+  //   console.error('Error Downloading', error);
+  //   return;
+  // }
+  file = { path: 'data.csv' };
 
   fs.createReadStream(file.path)
     .pipe(csv())
@@ -29,30 +30,35 @@ const processData = async () => {
         ];
       }
     })
-    .on('end', () => {
+    .on('end', async () => {
       const queryValues = Object.values(batchInsertRestaurants);
       console.info(`Finished Processing ${queryValues.length} records; Inserting into DB...`);
-      batchInsert({
-        pool,
-        tableName: 'restaurants',
-        columnNames: ['camis', 'name', 'address', 'zipcode', 'phone', 'cuisine_type'],
-        additionalQuery: `
-          ON CONFLICT (camis)
-          DO UPDATE
-          SET
-            name = EXCLUDED.name,
-            address = EXCLUDED.address,
-            zipcode = EXCLUDED.zipcode,
-            phone = EXCLUDED.phone,
-            cuisine_type = EXCLUDED.cuisine_type
-        `,
-        batchValues: queryValues,
-        onComplete: () => {
-          console.info('deleting file...');
-          fs.unlinkSync(file.path);
-          console.info('delete completed');
-        }
-      });
+      let result;
+      try {
+        result = await batchInsert({
+          pool,
+          tableName: 'restaurants',
+          columnNames: ['camis', 'name', 'address', 'zipcode', 'phone', 'cuisine_type'],
+          additionalQuery: `
+            ON CONFLICT (camis)
+            DO UPDATE
+            SET
+              name = EXCLUDED.name,
+              address = EXCLUDED.address,
+              zipcode = EXCLUDED.zipcode,
+              phone = EXCLUDED.phone,
+              cuisine_type = EXCLUDED.cuisine_type
+          `,
+          batchValues: queryValues
+        });
+      } catch (error) {
+        console.error('Error Updating Database', error);
+        return;
+      }
+      console.info('Finished updating/inserting', result.rowCount, 'rows');
+      // console.info('deleting file...');
+      // fs.unlinkSync(file.path);
+      // console.info('delete completed');
     });
 };
 

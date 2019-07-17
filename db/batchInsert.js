@@ -7,36 +7,17 @@ const format = require('pg-format');
 // batchValues: Array<Array<string>>
 // onComplete: () => void
 
-const batchInsert = ({
-  pool,
-  tableName,
-  columnNames,
-  additionalQuery,
-  batchValues,
-  onComplete
-}) => {
-  const start = new Date();
-  const query = values =>
-    format(
-      'INSERT INTO %s (%s) VALUES %L %s',
-      tableName,
-      columnNames.join(','),
-      values,
-      additionalQuery
-    );
-  pool.query(query(batchValues), [], (error, results) => {
-    console.log(results);
-    if (error) {
-      console.error(error);
-    } else {
-      console.info('Inserted/Updated', results.rowCount, 'rows');
-      const end = new Date() - start;
-      console.info('Execution time: %dms', end);
-      if (onComplete) {
-        onComplete(results);
-      }
-    }
-  });
+const batchInsert = ({ pool, tableName, columnNames, additionalQuery, batchValues }) => {
+  const query = format(
+    'INSERT INTO %s (%s) VALUES %L %s',
+    tableName,
+    columnNames.join(','),
+    batchValues,
+    additionalQuery
+  );
+  console.info('Running batch insert...', batchValues.length, 'rows');
+  console.info(query.substring(0, 200), '...');
+  return pool.query(query, []);
 };
 
 module.exports = batchInsert;
