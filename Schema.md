@@ -40,6 +40,7 @@ This is the schema for the thai finder app, along with some design decisions.
 - cuisine_type: string, indexed (should all be thai if we skip non-thai restaurants, but including in case we want to expand this feature)
 - current_grade: string, indexed (denormalizing field of the latest grade of the restaurant)
 - created_at: date
+
 Restaurants will be where the meat of our data will be stored. To ensure fast data calls, we will be denormalizing the current_grade field, (normally this would be the latest of the inspection's grade). We will need to keep this denormalization when processing data. 
 
 ### Inspections
@@ -53,6 +54,7 @@ Restaurants will be where the meat of our data will be stored. To ensure fast da
 - inspection_type: string
 - created_at: date
 - unique index on [inspection_type, inspection_date, CAMIS]
+
 Inspections hold a history of all the grades that were assigned to the restaurant. This is useful data to have if we have any issues with the denormalization. On key thing is the unique index on inspection_type, inspection_date, and CAMIS. This is to ensure we don't have any duplicate inspections.
 
 ### Violations
@@ -62,10 +64,12 @@ Inspections hold a history of all the grades that were assigned to the restauran
 - critical: boolean
 - inspection_id: foreign_key
 - created_at: date
+
 Violations are additional metadata provided about each inspections. These will be linked to the inspection via a join table.
 
 ### InspectionViolations
 - id: primary_key
 - inspection_id: foreign_key to inspections
 - violation_id: foreign_key to violations
+
 This join table creates a many to many relation between inspections and violations.
