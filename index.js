@@ -13,15 +13,16 @@ app.use(
   })
 );
 
-app.get('/', (request, response) => {
+app.get('/', (_, response) => {
   response.send('Try curling or sending a get request to /get_thai_places');
 });
 
 app.get('/get_thai_places', async (request, response) => {
-  const data = await getBPlusRatedThai(pool);
+  const all = request.query.all;
+  const data = await getBPlusRatedThai(pool, { all });
   response.json(data.rows);
 });
 
 app.listen(port, () => {
-  console.log(`App running on port ${port}.`);
+  console.info(`App running on port ${port}.`);
 });

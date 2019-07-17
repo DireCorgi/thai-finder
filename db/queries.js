@@ -1,10 +1,10 @@
 const queries = {
-  getBPlusRatedThai: pool =>
+  getBPlusRatedThai: (pool, { all }) =>
     pool.query(
       `
         SELECT *
         FROM restaurants
-        WHERE current_grade IN ('A', 'B') AND cuisine_type = 'Thai'
+        WHERE ${all ? '' : "current_grade IN ('A', 'B') AND"} cuisine_type = 'Thai'
       `
     )
 };
