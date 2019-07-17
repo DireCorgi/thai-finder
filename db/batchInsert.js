@@ -17,7 +17,7 @@ const batchInsert = ({ pool, tableName, columnNames, additionalQuery, batchValue
   );
   console.info('Running batch insert...', batchValues.length, 'rows');
   console.info(query.substring(0, 200), '...');
-  return pool.query(query, []);
+  return pool.query(query);
 };
 
 module.exports = batchInsert;
