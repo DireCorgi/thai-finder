@@ -5,6 +5,7 @@ const pool = require('../db');
 const getData = require('../helpers/getData');
 const batchInsert = require('../db/batchInsert');
 const updateGrades = require('../db/updateGrades');
+const { parseRestaurant, parseInspection } = require('../helpers/parseData');
 
 const batchInsertRestaurants = {};
 const batchInsertInspections = {};
@@ -12,27 +13,11 @@ const batchInsertInspections = {};
 const _processRow = row => {
   if (row['CUISINE DESCRIPTION'] === 'Thai') {
     if (!batchInsertRestaurants[row.CAMIS]) {
-      batchInsertRestaurants[row.CAMIS] = [
-        row.CAMIS,
-        row.DBA || 'N/A',
-        `${row.BUILDING} ${row.STREET}`,
-        row.ZIPCODE,
-        row.PHONE,
-        row['CUISINE DESCRIPTION'],
-        row.grade
-      ];
+      batchInsertRestaurants[row.CAMIS] = parseRestaurant(row);
     }
     const inspectionKey = `${row.CAMIS}-${row['INSPECTION DATE']}-${row['INSPECTION TYPE']}`;
     if (!batchInsertInspections[inspectionKey]) {
-      batchInsertInspections[inspectionKey] = [
-        row.CAMIS,
-        row['INSPECTION DATE'],
-        row.GRADE,
-        row.SCORE || null,
-        row['GRADE DATE'] || null,
-        row['RECORD DATE'] || null,
-        row['INSPECTION TYPE']
-      ];
+      batchInsertInspections[inspectionKey] = parseInspection(row);
     }
   }
 };
