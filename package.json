@@ -1,0 +1,17 @@
+{
+  "name": "thai-finder",
+  "version": "1.0.0",
+  "description": "find thai places with at least a B rating",
+  "main": "index.js",
+  "author": "DireCorgi <s.frank.ye@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^7.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-plugin-node": "^9.1.0"
+  }
+}
