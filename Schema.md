@@ -26,13 +26,13 @@ This is the schema for the thai finder app, along with some design decisions.
 ```
 
 ## Notes
-1. We don't need to store data for all restaurants. Since this is for thai restaurants only, we could skip any non thai restaurant to save space.
-2. The metadata is could be useful in the future, but we don't need that to deliver the current restaurant grade.
-3. The grade is the grade from the latest inspection.
+1. We don't need to store data for all restaurants. Since this is for thai restaurants only, we could skip any non thai restaurant to save space. (useful for Heroku free tier data limits)
+2. The metadata could be useful in the future, but we don't need that to deliver the current restaurant grade. We really only need to store restaurants, and possibily the inspections. We could always backfill the violations if needed.
+3. The grade is the grade from the latest inspection. This is a useful datafield to denormalize.
 
 ### Restaurants
 - id: primary_key
-- CAMIS: integer, indexed
+- camis: integer, indexed
 - name: string, null false
 - address: string (composition of building + street)
 - zipcode: string
@@ -41,11 +41,11 @@ This is the schema for the thai finder app, along with some design decisions.
 - current_grade: string, indexed (denormalizing field of the latest grade of the restaurant)
 - created_at: date
 
-Restaurants will be where the meat of our data will be stored. To ensure fast data calls, we will be denormalizing the current_grade field, (normally this would be the latest of the inspection's grade). We will need to keep this denormalization when processing data. 
+Restaurants will be where the meat of our data will be stored. To ensure fast data calls, we will be denormalizing the current_grade field, (normally this would be the latest of the inspection's grade). We will need to keep this denormalization in mind when processing data. 
 
 ### Inspections
 - id: primary_key
-- CAMIS: integer, indexed
+- camis: integer, indexed
 - inspection_date: date
 - grade: string
 - score: string
@@ -53,23 +53,6 @@ Restaurants will be where the meat of our data will be stored. To ensure fast da
 - record_date: date
 - inspection_type: string
 - created_at: date
-- unique index on [inspection_type, inspection_date, CAMIS]
+- unique index on [inspection_type, inspection_date, camis]
 
-Inspections hold a history of all the grades that were assigned to the restaurant. This is useful data to have if we have any issues with the denormalization. On key thing is the unique index on inspection_type, inspection_date, and CAMIS. This is to ensure we don't have any duplicate inspections.
-
-### Violations
-- id: primary_key
-- violation_code: string, indexed
-- violation_description: string
-- critical: boolean
-- inspection_id: foreign_key
-- created_at: date
-
-Violations are additional metadata provided about each inspections. These will be linked to the inspection via a join table.
-
-### InspectionViolations
-- id: primary_key
-- inspection_id: foreign_key to inspections
-- violation_id: foreign_key to violations
-
-This join table creates a many to many relation between inspections and violations.
+Inspections hold a history of all the grades that were assigned to the restaurant. This is useful data to have if we have any issues with the denormalization (we can always fall). On key thing is the unique index on inspection_type, inspection_date, and CAMIS. This is to ensure we don't have any duplicate inspections.
