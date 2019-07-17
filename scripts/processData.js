@@ -111,6 +111,7 @@ const processData = async () => {
     .on('data', _processRow)
     .on('end', async () => {
       await _updateDatabase();
+      console.info('updating denormalized grades field...');
       updateGrades(pool);
       console.info('deleting file...');
       fs.unlink(file.path, () => console.info('delete completed'));
