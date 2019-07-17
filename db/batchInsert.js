@@ -25,10 +25,11 @@ const batchInsert = ({
       additionalQuery
     );
   pool.query(query(batchValues), [], (error, results) => {
+    console.log(results);
     if (error) {
       console.error(error);
     } else {
-      console.info('Inserted', results.rowCount, 'rows');
+      console.info('Inserted/Updated', results.rowCount, 'rows');
       const end = new Date() - start;
       console.info('Execution time: %dms', end);
       if (onComplete) {
