@@ -1,1 +1,1 @@
-sudo -u postgres psql -c 'create database api;'
+createdb api

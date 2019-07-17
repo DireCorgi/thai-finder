@@ -3,7 +3,7 @@ exports.shorthands = undefined;
 exports.up = (pgm) => {
   pgm.createTable('restaurants', {
     id: "id",
-    CAMIS: { type: 'integer', notNull: true },
+    camis: { type: 'integer', notNull: true },
     name: { type: 'string', notNull: true },
     address: { type: 'string' },
     zipcode: { type: 'string' },
@@ -16,7 +16,7 @@ exports.up = (pgm) => {
       default: pgm.func("current_timestamp")
     },
   })
-  pgm.createIndex('restaurants', 'CAMIS', { unique: true });
+  pgm.createIndex('restaurants', 'camis', { unique: true });
   pgm.createIndex('restaurants', 'cuisine_type');
   pgm.createIndex('restaurants', 'current_grade');
   pgm.createIndex('restaurants', ['cuisine_type', 'current_grade']);
