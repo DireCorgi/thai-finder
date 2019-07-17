@@ -3,6 +3,7 @@ const fs = require('fs');
 const pool = require('../db');
 const getData = require('../helpers/getData');
 const batchInsert = require('../db/batchInsert');
+const updateGrades = require('../db/updateGrades');
 
 const batchInsertRestaurants = {};
 const batchInsertInspections = {};
@@ -25,8 +26,8 @@ const _processRow = row => {
       batchInsertInspections[inspectionKey] = [
         row.CAMIS,
         row['INSPECTION DATE'],
-        row.grade,
-        row.score,
+        row.GRADE,
+        row.SCORE || null,
         row['GRADE DATE'] || null,
         row['RECORD DATE'] || null,
         row['INSPECTION TYPE']
@@ -84,6 +85,7 @@ const _updateDatabase = async () => {
     return;
   }
   console.info('Finished updating/inserting inspections', inspectionsResult.rowCount, 'rows');
+  return { inspectionsResult, restaurantResult };
 };
 
 const processData = async () => {
@@ -98,8 +100,9 @@ const processData = async () => {
   fs.createReadStream(file.path)
     .pipe(csv())
     .on('data', _processRow)
-    .on('end', () => {
-      _updateDatabase();
+    .on('end', async () => {
+      await _updateDatabase();
+      updateGrades(pool);
       console.info('deleting file...');
       fs.unlink(file.path, () => console.info('delete completed'));
     });
