@@ -3,9 +3,9 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const pool = require('../db');
 const getData = require('../helpers/getData');
-const batchInsert = require('../db/batchInsert');
 const updateGrades = require('../db/updateGrades');
 const { parseRestaurant, parseInspection } = require('../helpers/parseData');
+const { updateRestaurants, updateInspections } = require('../db/updateData');
 
 const batchInsertRestaurants = {};
 const batchInsertInspections = {};
@@ -27,30 +27,7 @@ const _updateDatabase = async () => {
   console.info(`Finished Processing ${restaurants.length} records; Inserting into DB...`);
   let restaurantResult;
   try {
-    restaurantResult = await batchInsert({
-      pool,
-      tableName: 'restaurants',
-      columnNames: [
-        'camis',
-        'name',
-        'address',
-        'zipcode',
-        'phone',
-        'cuisine_type',
-        'current_grade'
-      ],
-      additionalQuery: `
-        ON CONFLICT (camis)
-        DO UPDATE
-        SET
-          name = EXCLUDED.name,
-          address = EXCLUDED.address,
-          zipcode = EXCLUDED.zipcode,
-          phone = EXCLUDED.phone,
-          cuisine_type = EXCLUDED.cuisine_type
-      `,
-      batchValues: restaurants
-    });
+    restaurantResult = await updateRestaurants({ pool, restaurants });
   } catch (error) {
     console.error('Error Updating Database For Restaurants:', error);
     return;
@@ -59,21 +36,7 @@ const _updateDatabase = async () => {
   const inspections = Object.values(batchInsertInspections);
   let inspectionsResult;
   try {
-    inspectionsResult = await batchInsert({
-      pool,
-      tableName: 'inspections',
-      columnNames: [
-        'camis',
-        'inspection_date',
-        'grade',
-        'score',
-        'grade_date',
-        'record_date',
-        'inspection_type'
-      ],
-      additionalQuery: 'ON CONFLICT (camis, inspection_date, inspection_type) DO NOTHING',
-      batchValues: inspections
-    });
+    inspectionsResult = await updateInspections({ pool, inspections });
   } catch (error) {
     console.error('Error Updating Database For Inspections:', error);
     return;

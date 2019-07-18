@@ -37,3 +37,8 @@ See Schema.md
 1. Return all inspections of a restaurant.
 2. Ability to search.
 3. Paginated query results.
+
+# Testing
+To run jest tests run `yarn test`
+
+Added a few basic unit tests as examples. Integration testing requires a bit more work to do for node (one of the downsides).
